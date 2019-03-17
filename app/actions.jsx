@@ -1,13 +1,14 @@
 
-var login = function() {
+var upload = function() {
     return {
-        type: 'LOGIN'
+        type: 'UPLOAD'
     }
 }
-var logout = function() {
+var load_ok = function(data) {
     return {
-        type: 'LOGOUT'
+        type: 'LOAD_OK',
+        data
     }
 }
 
-module.exports = {login, logout};
+module.exports = {upload, load_ok};

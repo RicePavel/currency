@@ -27,7 +27,7 @@ class App extends React.Component {
 
 const mapStateToProps = function(state) {
     return {
-        auth: state.get('auth')
+        rates: state.get('rates')
     };
 }
 

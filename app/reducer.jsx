@@ -1,24 +1,19 @@
 import {Map} from "immutable";
 import {createStore} from 'redux';
+import * as $ from 'jquery';
 
-var initState = Map();
-if (localStorage.getItem('auth') === 'true') {
-    initState = initState.set('auth', true);
-}
+
 
 /*
  * auth
  */
-var reducer = function(state = initState, action) {
+var reducer = function(state = Map(), action) {
     switch (action.type) {
-        case 'LOGIN':
-            state = state.set('auth', true);
-            localStorage.setItem('auth', 'true');
-            return state;
+        case 'UPLOAD':
             break;
-        case 'LOGOUT':
-            localStorage.removeItem('auth');
-            return state.set('auth', false);
+        case 'LOAD_OK':
+            state = state.set('rates', action.data.Valute);
+            return state;
             break;
     }
     return state;
