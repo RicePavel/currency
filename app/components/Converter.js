@@ -6,24 +6,59 @@ import {connect} from 'react-redux';
 
 class Converter extends React.Component {
     
+    constructor(props) {
+        super(props);
+        this.state = {
+            loaded: false,
+            currency1: '',
+            currency2: '',
+            value1: '',
+            value2: ''
+        };
+        this.changeData = this.changeData.bind(this);
+        this.changeCurrency1 = this.changeCurrency1.bind(this);
+    }
+    
     componentDidMount() {
         loadData();
     }
     
+    changeData() {
+        this.setState({currency1: this.refs.currency1});
+    }
+    
+    changeCurrency1(e) {
+        var val = e.target.value;
+        this.setState({currency1: val});
+    }
+    
+    componentDidUpdate() {
+        if (this.state.loaded === false) {
+            this.setState({loaded: true, currency1: 'USD', currency2: 'RUB', value1: 1});
+        }
+    }
+    
     render() {
         
-        var list = '';
+        var options = '';
         if (this.props.rates) {
-            list = Object.keys(this.props.rates).map((element, index) => {
-                return <li key={index} >{element}</li>;
+            options = Object.keys(this.props.rates).map((element, index) => {
+                return <option key={index} value={element} >{element}</option>;
             });
         }
         
         return (<div>
                     Конвертер
-                    <ul>
-                        {list}
-                    </ul>
+                    <form>
+                        <p>
+                            <select onChange={this.changeCurrency1} value={this.state.currency1} >{options}</select>
+                            <input name="value1" />
+                        </p>
+                        <p>
+                            <select>{options}</select>
+                            <input name="value2" disabled />
+                        </p>
+                    </form>
                 </div>);
     }
     
