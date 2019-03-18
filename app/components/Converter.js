@@ -3,16 +3,16 @@ import React from "react";
 import {store} from '../reducer.jsx';
 import loadData from '../loadData.js';
 import {connect} from 'react-redux';
+import convert from '../convert.js';
 
 class Converter extends React.Component {
     
     constructor(props) {
         super(props);
         this.state = {
-            loaded: false,
-            currency1: '',
-            currency2: '',
-            value1: '',
+            currency1: 'USD',
+            currency2: 'RUB',
+            value1: 1,
             value2: ''
         };
         this.changeValue = this.changeValue.bind(this);
@@ -23,9 +23,7 @@ class Converter extends React.Component {
         if (promise) {
             promise.done(() => {this.convert();});
         }
-        if (this.state.loaded === false) {
-            this.setState({loaded: true, currency1: 'USD', currency2: 'RUB', value1: 1}, () => {this.convert();});
-        }
+        this.setState({loaded: true, currency1: 'USD', currency2: 'RUB', value1: 1}, () => {this.convert();});
     }
     
     changeValue(e) {
@@ -35,12 +33,11 @@ class Converter extends React.Component {
     }
     
     convert() {
-        if (this.props.rates && this.state.loaded) {
+        if (this.props.rates) {
             var price1 = this.props.rates[this.state.currency1].Value;
             var price2 = this.props.rates[this.state.currency2].Value;
             var value1 = this.state.value1;
-            var value2 = (price1/price2)*value1;
-            value2 = (value2).toFixed(2);
+            var value2 = convert(price1, price2, value1);
             this.setState({value2: value2});
         }
     }
