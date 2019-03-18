@@ -15,27 +15,38 @@ class Converter extends React.Component {
             value1: '',
             value2: ''
         };
-        this.changeData = this.changeData.bind(this);
-        this.changeCurrency1 = this.changeCurrency1.bind(this);
+        this.changeValue = this.changeValue.bind(this);
     }
     
     componentDidMount() {
-        loadData();
+        var promise = loadData(this.props.rates, this.props.uploadDate);
+        if (promise) {
+            promise.done(() => {this.convert();});
+        }
+        if (this.state.loaded === false) {
+            this.setState({loaded: true, currency1: 'USD', currency2: 'RUB', value1: 1}, () => {this.convert();});
+        }
     }
     
-    changeData() {
-        this.setState({currency1: this.refs.currency1});
-    }
-    
-    changeCurrency1(e) {
+    changeValue(e) {
         var val = e.target.value;
-        this.setState({currency1: val});
+        var name = e.target.name;
+        this.setState({[name]: val}, () => {this.convert();});
+    }
+    
+    convert() {
+        if (this.props.rates && this.state.loaded) {
+            var price1 = this.props.rates[this.state.currency1].Value;
+            var price2 = this.props.rates[this.state.currency2].Value;
+            var value1 = this.state.value1;
+            var value2 = (price1/price2)*value1;
+            value2 = (value2).toFixed(2);
+            this.setState({value2: value2});
+        }
     }
     
     componentDidUpdate() {
-        if (this.state.loaded === false) {
-            this.setState({loaded: true, currency1: 'USD', currency2: 'RUB', value1: 1});
-        }
+        
     }
     
     render() {
@@ -49,14 +60,14 @@ class Converter extends React.Component {
         
         return (<div>
                     Конвертер
-                    <form>
+                    <form autocomplete="off" >
                         <p>
-                            <select onChange={this.changeCurrency1} value={this.state.currency1} >{options}</select>
-                            <input name="value1" />
+                            <select onChange={this.changeValue} name="currency1" value={this.state.currency1} >{options}</select>
+                            <input onChange={this.changeValue} type="number" name="value1" value={this.state.value1} />
                         </p>
                         <p>
-                            <select>{options}</select>
-                            <input name="value2" disabled />
+                            <select onChange={this.changeValue} name="currency2" value={this.state.currency2}>{options}</select>
+                            <input onChange={this.changeValue} name="value2" value={this.state.value2} disabled />
                         </p>
                     </form>
                 </div>);
@@ -66,7 +77,8 @@ class Converter extends React.Component {
 
 const mapStateToProps = function(state) {
     return {
-        rates: state.get('rates')
+        rates: state.get('rates'),
+        uploadDate: state.get('uploadDate')
     };
 }
 
